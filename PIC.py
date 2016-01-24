@@ -10,8 +10,8 @@ def group(lst, n):
             yield tuple(val)
 
 
-for currentFile in glob.iglob('./*.bc'):
-    with open(currentFile, 'rb') as f:
+
+def make_image(f):
         
         # byte = f.read(1)
         header = f.read(48)
@@ -40,5 +40,11 @@ for currentFile in glob.iglob('./*.bc'):
     
     newimage = Image.new('RGBA', (picSize, picSize))  # type, size
     newimage.putdata(out)
+    
+    return newimage
+
+for currentFile in glob.iglob('./*.bc'):
+    with open(currentFile, 'rb') as f:
+        newimage = make_image(f)
     pngName = currentFile[:-2] + "png"
     newimage.save(pngName)
