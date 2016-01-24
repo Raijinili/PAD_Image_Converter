@@ -11,25 +11,22 @@ def group(lst, n):
 
 
 
-def make_image(f):
+def make_image(bc_data):
         
-        # byte = f.read(1)
-        header = f.read(48)
-        
-        sizeData = header[21]
-        
-        if sizeData == 0x32:
-            picSize = 512
-        elif sizeData == 0x31:
-            picSize = 256
-        else:
-            picSize = 128
-        
-        numBytes = picSize*picSize*2
-        
-        # Should be small enough to fit in memory.
-        image = f.read(numBytes)
-        
+    sizeData = bc_data[21]
+    
+    if sizeData == 0x32:
+        picSize = 512
+    elif sizeData == 0x31:
+        picSize = 256
+    else:
+        picSize = 128
+    
+    numBytes = picSize*picSize*2
+    assert len(bc_data) == numBytes + 48
+    
+    image = bc_data[48:]
+    
     out = []
     for rg, ba in group(image, 2):
         r, g = divmod(byte, 16)
@@ -45,6 +42,9 @@ def make_image(f):
 
 for currentFile in glob.iglob('./*.bc'):
     with open(currentFile, 'rb') as f:
-        newimage = make_image(f)
+        # Should be small enough to fit in memory.
+        bc_data = f.read()
+    
+    newimage = make_image(bc_data)
     pngName = currentFile[:-2] + "png"
     newimage.save(pngName)
